@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal vs Billing Details Analysis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Merriweather+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES (SPRINGER NATURE STYLE)
+           Brand-led palette using blue, teal, orange,
+           green, purple and neutrals only.
+           =========================================== */
+        :root {
+            --sn-blue: #01324b;
+            --sn-teal: #267e9e;
+            --sn-orange: #ff8200;
+            --sn-blue-soft: rgba(1, 50, 75, 0.08);
+            --sn-teal-soft: rgba(38, 126, 158, 0.1);
+            --sn-orange-soft: rgba(255, 130, 0, 0.12);
+            --ink-900: #173042;
+            --ink-700: #37586a;
+            --ink-500: #637988;
+            --paper: #f4f7f9;
+            --white: #ffffff;
+            --line: rgba(1, 50, 75, 0.12);
+            --line-strong: rgba(1, 50, 75, 0.22);
+            --shadow: 0 clamp(0.8rem, 1.6vw, 1.6rem) clamp(2rem, 4vw, 4rem) rgba(1, 50, 75, 0.12);
+            --font-display: 'Merriweather', serif;
+            --font-body: 'Merriweather Sans', sans-serif;
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-fast: 0.35s;
+            --duration-normal: 0.7s;
+            --duration-slow: 1s;
+            --radius-xl: clamp(1rem, 2vw, 1.8rem);
+            --radius-lg: clamp(0.8rem, 1.6vw, 1.3rem);
+            --radius-md: clamp(0.65rem, 1vw, 1rem);
+            --tag-size: clamp(0.7rem, 0.95vw, 0.92rem);
+            --stat-size: clamp(2.1rem, 6vw, 5.4rem);
+            --metric-size: clamp(1.4rem, 3vw, 2.4rem);
+        }
+
+        /* ===========================================
+           BASE RESET
+           =========================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--ink-900);
+            background:
+                linear-gradient(180deg, rgba(38, 126, 158, 0.06), transparent 18%),
+                linear-gradient(135deg, #eef4f7 0%, #f7fafb 45%, #edf3f6 100%);
+        }
+
+        /* ===========================================
+           VIEWPORT FITTING: MANDATORY BASE STYLES
+           Include this ENTIRE file in every presentation.
+           These styles ensure slides fit exactly in the viewport.
+           =========================================== */
+
+        /* 1. Lock html/body to viewport */
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        html {
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        /* 2. Each slide = exact viewport height */
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh; /* Dynamic viewport height for mobile browsers */
+            overflow: hidden; /* CRITICAL: Prevent ANY overflow */
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* 3. Content container with flex for centering */
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100%;
+            overflow: hidden; /* Double-protection against overflow */
+            padding: var(--slide-padding);
+        }
+
+        /* 4. ALL typography uses clamp() for responsive scaling */
+        :root {
+            /* Titles scale from mobile to desktop */
+            --title-size: clamp(1.5rem, 5vw, 4rem);
+            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+
+            /* Body text */
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+
+            /* Spacing scales with viewport */
+            --slide-padding: clamp(1rem, 4vw, 4rem);
+            --content-gap: clamp(0.5rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+        }
+
+        /* 5. Cards/containers use viewport-relative max sizes */
+        .card, .container, .content-box {
+            max-width: min(90vw, 1000px);
+            max-height: min(80vh, 700px);
+        }
+
+        /* 6. Lists auto-scale with viewport */
+        .feature-list, .bullet-list {
+            gap: clamp(0.4rem, 1vh, 1rem);
+        }
+
+        .feature-list li, .bullet-list li {
+            font-size: var(--body-size);
+            line-height: 1.4;
+        }
+
+        /* 7. Grids adapt to available space */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+            gap: clamp(0.5rem, 1.5vw, 1rem);
+        }
+
+        /* 8. Images constrained to viewport */
+        img, .image-container {
+            max-width: 100%;
+            max-height: min(50vh, 400px);
+            object-fit: contain;
+        }
+
+        /* ===========================================
+           RESPONSIVE BREAKPOINTS
+           Aggressive scaling for smaller viewports
+           =========================================== */
+
+        /* Short viewports (< 700px height) */
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 3vw, 2rem);
+                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+                --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+                --h2-size: clamp(1rem, 3vw, 1.75rem);
+            }
+        }
+
+        /* Very short viewports (< 600px height) */
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+                --title-size: clamp(1.1rem, 4vw, 2rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+            }
+
+            /* Hide non-essential elements */
+            .nav-dots, .keyboard-hint, .decorative {
+                display: none;
+            }
+        }
+
+        /* Extremely short (landscape phones, < 500px height) */
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.4rem, 2vw, 1rem);
+                --title-size: clamp(1rem, 3.5vw, 1.5rem);
+                --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+        }
+
+        /* Narrow viewports (< 600px width) */
+        @media (max-width: 600px) {
+            :root {
+                --title-size: clamp(1.25rem, 7vw, 2.5rem);
+            }
+
+            /* Stack grids vertically */
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===========================================
+           REDUCED MOTION
+           Respect user preferences
+           =========================================== */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.2s !important;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
+        }
+
+        /* ===========================================
+           GLOBAL LAYOUT SHELLS
+           Reusable page structures and Springer Nature
+           inspired geometric accents.
+           =========================================== */
+        .progress-bar {
+            position: fixed;
+            inset: 0 auto auto 0;
+            width: 0%;
+            height: clamp(0.25rem, 0.45vw, 0.45rem);
+            background: linear-gradient(90deg, var(--sn-blue), var(--sn-teal), var(--sn-orange));
+            z-index: 9998;
+            transition: width var(--duration-fast) ease;
+        }
+
+        .nav-dots {
+            position: fixed;
+            right: clamp(0.6rem, 1.4vw, 1.4rem);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.45rem, 0.9vw, 0.7rem);
+            z-index: 9997;
+        }
+
+        .nav-dot {
+            width: clamp(0.5rem, 0.85vw, 0.75rem);
+            height: clamp(0.5rem, 0.85vw, 0.75rem);
+            border-radius: 999px;
+            border: 0;
+            background: rgba(0, 59, 92, 0.22);
+            cursor: pointer;
+            transition: transform var(--duration-fast) ease, background var(--duration-fast) ease;
+        }
+
+        .nav-dot.active {
+            background: var(--sn-orange);
+            transform: scale(1.25);
+        }
+
+        .slide-shell {
+            position: relative;
+            width: 100%;
+            max-width: min(92vw, 1320px);
+            margin: 0 auto;
+            min-height: 0;
+            max-height: calc(100vh - clamp(2rem, 8vw, 8rem));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: clamp(0.8rem, 1.6vw, 1.4rem);
+        }
+
+        .section-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: clamp(0.4rem, 1vw, 0.8rem);
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            font-size: var(--tag-size);
+            font-weight: 700;
+            color: var(--sn-blue);
+        }
+
+        .section-kicker::before {
+            content: "";
+            width: clamp(1.4rem, 2vw, 2.2rem);
+            height: 1px;
+            background: currentColor;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: clamp(1.95rem, 4.7vw, 3.9rem);
+            line-height: 1.02;
+            max-width: 14ch;
+            color: var(--sn-blue);
+            text-wrap: balance;
+        }
+
+        .section-subtitle {
+            max-width: 58ch;
+            font-size: clamp(0.95rem, 1.45vw, 1.2rem);
+            line-height: 1.45;
+            color: var(--ink-700);
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.94);
+            border: 1px solid rgba(1, 50, 75, 0.08);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(8px);
+        }
+
+        .panel-pad {
+            padding: clamp(1rem, 2vw, 1.7rem);
+        }
+
+        .caption {
+            font-size: clamp(0.84rem, 1vw, 0.98rem);
+            color: var(--ink-500);
+            line-height: 1.35;
+        }
+
+        .small-note {
+            font-size: clamp(0.75rem, 0.95vw, 0.92rem);
+            color: var(--ink-500);
+            line-height: 1.4;
+        }
+
+        .eyebrow-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: clamp(0.35rem, 0.7vw, 0.5rem) clamp(0.6rem, 1vw, 0.9rem);
+            border-radius: 999px;
+            background: var(--sn-blue-soft);
+            color: var(--sn-blue);
+            font-size: var(--tag-size);
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        /* ===========================================
+           ANIMATION SYSTEM
+           Scroll-triggered reveals with staggered timing.
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(clamp(0.8rem, 2vw, 1.5rem));
+            transition:
+                opacity var(--duration-normal) var(--ease-out-expo),
+                transform var(--duration-normal) var(--ease-out-expo);
+        }
+
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.94);
+            transition:
+                opacity var(--duration-normal) var(--ease-out-expo),
+                transform var(--duration-normal) var(--ease-out-expo);
+        }
+
+        .slide.visible .reveal,
+        .slide.visible .reveal-scale {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .stagger-1 { transition-delay: 0.08s; }
+        .stagger-2 { transition-delay: 0.18s; }
+        .stagger-3 { transition-delay: 0.28s; }
+        .stagger-4 { transition-delay: 0.38s; }
+        .stagger-5 { transition-delay: 0.48s; }
+        .stagger-6 { transition-delay: 0.58s; }
+
+        /* ===========================================
+           TITLE SLIDE
+           Hero slide with strong analytical framing.
+           =========================================== */
+        .title-slide {
+            background:
+                linear-gradient(130deg, rgba(1, 50, 75, 0.98) 0%, rgba(38, 126, 158, 0.94) 62%, rgba(38, 126, 158, 0.9) 100%),
+                linear-gradient(180deg, #01324b, #267e9e);
+            color: var(--white);
+        }
+
+        .title-slide .slide-content {
+            justify-content: center;
+        }
+
+        .title-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+            gap: clamp(1rem, 2vw, 2rem);
+            align-items: center;
+            min-height: 0;
+            max-height: 100%;
+        }
+
+        .brand-mark {
+            display: inline-flex;
+            align-items: center;
+            gap: clamp(0.5rem, 1vw, 0.9rem);
+            padding: clamp(0.55rem, 1vw, 0.8rem) clamp(0.8rem, 1.3vw, 1.1rem);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 999px;
+            width: fit-content;
+            font-size: clamp(0.82rem, 1vw, 0.98rem);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .brand-mark strong {
+            color: #b7ebff;
+        }
+
+        .hero-title {
+            margin-top: clamp(1rem, 2vw, 1.6rem);
+            font-family: var(--font-display);
+            font-size: clamp(2.3rem, 6vw, 5.8rem);
+            line-height: 0.9;
+            max-width: 9ch;
+        }
+
+        .hero-subtitle {
+            margin-top: clamp(0.9rem, 1.6vw, 1.3rem);
+            max-width: 45ch;
+            font-size: clamp(1rem, 1.6vw, 1.28rem);
+            line-height: 1.45;
+            color: rgba(255, 255, 255, 0.86);
+        }
+
+        .hero-tagline {
+            align-self: center;
+            justify-self: end;
+            position: relative;
+            display: grid;
+            gap: clamp(0.6rem, 1vw, 0.9rem);
+            padding: clamp(1.1rem, 2vw, 1.5rem);
+            border-top: clamp(0.28rem, 0.5vw, 0.4rem) solid rgba(255, 130, 0, 0.92);
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius-lg);
+            max-width: 24ch;
+            box-shadow: 0 clamp(0.8rem, 1.8vw, 1.5rem) clamp(2rem, 4vw, 3rem) rgba(1, 50, 75, 0.16);
+        }
+
+        .hero-tagline .big-number {
+            display: block;
+            font-size: clamp(3rem, 7vw, 5.4rem);
+            font-weight: 800;
+            line-height: 0.9;
+            color: #ffffff;
+        }
+
+        .hero-tagline p {
+            margin-top: 0;
+            font-size: clamp(0.9rem, 1.18vw, 1rem);
+            line-height: 1.4;
+            color: rgba(255, 255, 255, 0.88);
+        }
+
+        /* ===========================================
+           INTRO AND SUMMARY SLIDES
+           Structured cards for scope and key metrics.
+           =========================================== */
+        .summary-grid,
+        .metrics-grid,
+        .examples-grid,
+        .takeaway-grid {
+            display: grid;
+            gap: clamp(0.8rem, 1.4vw, 1.2rem);
+            min-height: 0;
+            align-items: stretch;
+        }
+
+        .summary-grid {
+            grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+        }
+
+        .metrics-grid.four {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            align-items: stretch;
+        }
+
+        .metrics-grid.three {
+            grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.08fr);
+            align-items: stretch;
+        }
+
+        .takeaway-grid {
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        }
+
+        .takeaway-grid.single-column {
+            grid-template-columns: minmax(0, 1fr);
+            max-width: min(88vw, 1180px);
+        }
+
+        .takeaway-grid.single-column .panel {
+            min-height: min(78vh, 760px);
+        }
+
+        .takeaway-grid.single-column .section-title {
+            max-width: 14ch;
+        }
+
+        .takeaway-grid.single-column .callout-band {
+            max-width: min(74vw, 920px);
+        }
+
+        .bullet-list {
+            display: grid;
+            padding-left: clamp(1rem, 1.5vw, 1.4rem);
+            margin-top: clamp(0.8rem, 1.4vw, 1.2rem);
+            align-content: start;
+            grid-auto-rows: min-content;
+        }
+
+        .bullet-list li {
+            color: var(--ink-700);
+            padding-right: clamp(0.2rem, 0.8vw, 0.6rem);
+        }
+
+        .panel-stack {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: clamp(0.8rem, 1.4vw, 1.1rem);
+            min-height: 0;
+        }
+
+        .metric-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: clamp(8rem, 16vh, 10rem);
+            height: 100%;
+            padding: clamp(1rem, 1.8vw, 1.4rem);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(1, 50, 75, 0.08);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(245, 248, 250, 0.95));
+        }
+
+        .metric-card .label {
+            font-size: clamp(0.84rem, 1vw, 0.94rem);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--ink-500);
+            font-weight: 700;
+        }
+
+        .metric-card .value {
+            margin-top: clamp(0.45rem, 0.8vw, 0.6rem);
+            font-size: var(--metric-size);
+            font-weight: 800;
+            color: var(--sn-teal);
+            line-height: 0.95;
+        }
+
+        .metric-card .detail {
+            margin-top: clamp(0.45rem, 0.8vw, 0.7rem);
+            font-size: clamp(0.9rem, 1.2vw, 1.02rem);
+            color: var(--ink-700);
+            line-height: 1.35;
+        }
+
+        .metric-card.orange .value,
+        .metric-card.orange .label { color: var(--sn-orange); }
+        .metric-card.green .value,
+        .metric-card.green .label { color: var(--sn-teal); }
+        .metric-card.purple .value,
+        .metric-card.purple .label { color: var(--sn-blue); }
+        .metric-card.blue .value,
+        .metric-card.blue .label { color: var(--sn-blue); }
+
+        .split-stat {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: clamp(0.8rem, 1.4vw, 1.2rem);
+            align-items: stretch;
+        }
+
+        .stat-block {
+            position: relative;
+            min-height: clamp(12rem, 26vh, 16rem);
+            padding: clamp(1.1rem, 2vw, 1.7rem);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+        }
+
+        .stat-block::before {
+            content: "";
+            position: absolute;
+            inset: auto 0 0 0;
+            height: clamp(0.8rem, 1.2vw, 1rem);
+            background: currentColor;
+            opacity: 0.14;
+        }
+
+        .stat-block.primary {
+            background: linear-gradient(155deg, rgba(255, 130, 0, 0.13), rgba(255, 255, 255, 0.94));
+            color: var(--sn-orange);
+        }
+
+        .stat-block.secondary {
+            background: linear-gradient(155deg, rgba(1, 50, 75, 0.1), rgba(255, 255, 255, 0.94));
+            color: var(--sn-blue);
+        }
+
+        .stat-block .stat {
+            font-size: clamp(3rem, 8vw, 6.8rem);
+            line-height: 0.9;
+            font-weight: 800;
+        }
+
+        .stat-block h3 {
+            margin-top: clamp(0.55rem, 1vw, 0.8rem);
+            font-size: clamp(1.1rem, 2vw, 1.6rem);
+            line-height: 1.05;
+            color: var(--ink-900);
+        }
+
+        .stat-block p {
+            margin-top: clamp(0.45rem, 0.8vw, 0.7rem);
+            color: var(--ink-700);
+            font-size: clamp(0.95rem, 1.25vw, 1.08rem);
+            line-height: 1.4;
+            max-width: 28ch;
+        }
+
+        /* ===========================================
+           FIELD COMPARISON SLIDES
+           Data cards and compact indicators.
+           =========================================== */
+        .field-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: clamp(0.55rem, 0.9vw, 0.8rem);
+            padding: clamp(1rem, 1.8vw, 1.3rem);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(1, 50, 75, 0.08);
+            background: rgba(255, 255, 255, 0.92);
+            min-height: clamp(11rem, 22vh, 14rem);
+            height: 100%;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .field-card .field-top {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: start;
+            gap: clamp(0.5rem, 1vw, 1rem);
+        }
+
+        .field-card h3 {
+            font-size: clamp(1rem, 1.6vw, 1.35rem);
+            line-height: 1.1;
+            color: var(--sn-teal);
+            min-width: 0;
+        }
+
+        .field-card strong {
+            font-size: clamp(1.8rem, 3.8vw, 3rem);
+            line-height: 0.9;
+            color: var(--sn-blue);
+            white-space: nowrap;
+        }
+
+        .field-card .bar-track {
+            width: 100%;
+            height: clamp(0.55rem, 0.85vw, 0.8rem);
+            border-radius: 999px;
+            background: rgba(0, 59, 92, 0.08);
+            overflow: hidden;
+        }
+
+        .field-card .bar-fill {
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, var(--sn-blue), var(--sn-teal));
+        }
+
+        .field-card.orange strong,
+        .field-card.orange h3 { color: var(--sn-orange); }
+        .field-card.orange .bar-fill { background: linear-gradient(90deg, var(--sn-orange), var(--sn-teal)); }
+        .field-card.green strong,
+        .field-card.green h3 { color: var(--sn-teal); }
+        .field-card.green .bar-fill { background: linear-gradient(90deg, var(--sn-teal), var(--sn-blue)); }
+        .field-card.purple strong,
+        .field-card.purple h3 { color: var(--sn-orange); }
+        .field-card.purple .bar-fill { background: linear-gradient(90deg, var(--sn-orange), var(--sn-blue)); }
+
+        .field-card .caption {
+            margin-top: auto;
+            font-size: clamp(0.82rem, 0.95vw, 0.94rem);
+            line-height: 1.28;
+            max-width: 24ch;
+            text-wrap: pretty;
+        }
+
+        /* ===========================================
+           DISTRIBUTION SLIDE
+           Bucket chart explaining what address=false means.
+           =========================================== */
+        .distribution-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+            gap: clamp(1rem, 1.8vw, 1.4rem);
+            min-height: 0;
+            align-items: stretch;
+        }
+
+        .bucket-chart {
+            display: grid;
+            gap: clamp(0.6rem, 0.9vw, 0.9rem);
+        }
+
+        .bucket-row {
+            display: grid;
+            grid-template-columns: clamp(4.4rem, 8vw, 6.4rem) minmax(0, 1fr) clamp(3rem, 5vw, 4rem);
+            gap: clamp(0.6rem, 1vw, 0.9rem);
+            align-items: center;
+        }
+
+        .bucket-label,
+        .bucket-value {
+            font-size: clamp(0.96rem, 1.2vw, 1.05rem);
+            font-weight: 700;
+            color: var(--ink-700);
+            white-space: nowrap;
+        }
+
+        .bucket-value {
+            text-align: right;
+        }
+
+        .bucket-bar {
+            height: clamp(0.8rem, 1vw, 1rem);
+            border-radius: 999px;
+            overflow: hidden;
+            background: rgba(0, 59, 92, 0.08);
+        }
+
+        .bucket-bar span {
+            display: block;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, var(--sn-orange), var(--sn-teal));
+        }
+
+        .insight-box {
+            display: grid;
+            gap: clamp(0.8rem, 1vw, 1rem);
+            align-content: center;
+        }
+
+        .insight-box .highlight {
+            padding: clamp(1rem, 1.8vw, 1.4rem);
+            border-left: clamp(0.3rem, 0.6vw, 0.45rem) solid var(--sn-teal);
+            background: var(--sn-teal-soft);
+            border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+            display: grid;
+            gap: clamp(0.45rem, 0.7vw, 0.65rem);
+        }
+
+        .insight-box .highlight strong {
+            display: block;
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            color: var(--sn-teal);
+            line-height: 0.9;
+        }
+
+        .insight-box .highlight p {
+            font-size: clamp(0.94rem, 1.08vw, 1.02rem);
+            line-height: 1.3;
+            color: var(--ink-900);
+            max-width: 28ch;
+        }
+
+        .distribution-layout .section-title {
+            max-width: 12ch;
+        }
+
+        /* ===========================================
+           EXAMPLES SLIDE
+           Six compact case cards split by interpretation.
+           =========================================== */
+        .examples-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .example-card {
+            display: grid;
+            gap: clamp(0.45rem, 0.75vw, 0.7rem);
+            padding: clamp(0.95rem, 1.6vw, 1.25rem);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(1, 50, 75, 0.08);
+            background: rgba(255, 255, 255, 0.94);
+            min-height: clamp(11rem, 22vh, 14rem);
+            align-content: start;
+        }
+
+        .example-card.good {
+            box-shadow: inset 0 0 0 1px rgba(38, 126, 158, 0.14);
+        }
+
+        .example-card.risk {
+            box-shadow: inset 0 0 0 1px rgba(232, 109, 31, 0.14);
+        }
+
+        .example-card .case-type {
+            font-size: clamp(0.72rem, 0.95vw, 0.88rem);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            font-weight: 800;
+        }
+
+        .example-card.good .case-type { color: var(--sn-teal); }
+        .example-card.risk .case-type { color: var(--sn-orange); }
+
+        .example-card h3 {
+            font-size: clamp(1rem, 1.45vw, 1.2rem);
+            color: var(--sn-teal);
+            line-height: 1.1;
+        }
+
+        .example-card p {
+            font-size: clamp(0.86rem, 1vw, 0.98rem);
+            line-height: 1.32;
+            color: var(--ink-700);
+        }
+
+        .case-score {
+            display: inline-flex;
+            width: fit-content;
+            padding: clamp(0.22rem, 0.45vw, 0.35rem) clamp(0.5rem, 0.8vw, 0.7rem);
+            border-radius: 999px;
+            background: rgba(0, 59, 92, 0.08);
+            font-size: clamp(0.75rem, 0.95vw, 0.86rem);
+            color: var(--ink-700);
+            font-weight: 700;
+        }
+
+        /* ===========================================
+           IMPLICATIONS SLIDE
+           Final recommendation and decision framing.
+           =========================================== */
+        .callout-band {
+            display: grid;
+            grid-template-columns: max-content minmax(0, 1fr);
+            gap: clamp(1rem, 1.8vw, 1.6rem);
+            align-items: end;
+            padding: clamp(1rem, 2vw, 1.5rem);
+            border-radius: var(--radius-xl);
+            background: linear-gradient(135deg, rgba(1, 50, 75, 0.08), rgba(38, 126, 158, 0.1));
+            border: 1px solid rgba(1, 50, 75, 0.12);
+        }
+
+        .callout-band .figure {
+            font-size: clamp(2.4rem, 6vw, 4.8rem);
+            font-weight: 800;
+            color: var(--sn-blue);
+            line-height: 0.88;
+            white-space: nowrap;
+        }
+
+        .callout-band .section-subtitle {
+            max-width: none;
+            font-size: clamp(0.92rem, 1.08vw, 1rem);
+            line-height: 1.38;
+        }
+
+        .recommendation-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: clamp(0.8rem, 1.2vw, 1rem);
+            margin-top: clamp(0.8rem, 1.4vw, 1.2rem);
+            align-items: stretch;
+            grid-auto-rows: 1fr;
+        }
+
+        .balanced-title {
+            max-width: 12ch;
+        }
+
+        .narrow-title {
+            max-width: 11ch;
+        }
+
+        .compact-top-gap {
+            margin-top: clamp(0.7rem, 1.1vw, 0.95rem);
+        }
+
+        body:not(.editing) .bullet-list li.is-empty,
+        body:not(.editing) .recommendation.is-empty,
+        body:not(.editing) .recommendation-list.is-empty,
+        body:not(.editing) .small-note.is-empty,
+        body:not(.editing) .caption.is-empty {
+            display: none !important;
+        }
+
+        .recommendation {
+            padding: clamp(0.95rem, 1.6vw, 1.2rem);
+            border-radius: var(--radius-lg);
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(1, 50, 75, 0.08);
+            height: 100%;
+        }
+
+        .recommendation h3 {
+            color: var(--sn-teal);
+            font-size: clamp(1rem, 1.45vw, 1.2rem);
+            margin-bottom: clamp(0.25rem, 0.5vw, 0.45rem);
+        }
+
+        .recommendation p {
+            color: var(--ink-700);
+            font-size: clamp(0.88rem, 1.08vw, 0.98rem);
+            line-height: 1.35;
+        }
+
+        /* ===========================================
+           INLINE EDITING UI
+           JS-controlled hover affordance and edit mode.
+           =========================================== */
+        .edit-hotzone {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 80px;
+            height: 80px;
+            z-index: 10000;
+            cursor: pointer;
+        }
+
+        .edit-toggle,
+        .export-toggle {
+            position: fixed;
+            top: clamp(0.8rem, 1.2vw, 1rem);
+            border: 0;
+            border-radius: 999px;
+            padding: clamp(0.55rem, 0.9vw, 0.7rem) clamp(0.8rem, 1.2vw, 1rem);
+            font-size: clamp(0.8rem, 0.95vw, 0.92rem);
+            font-weight: 700;
+            color: var(--white);
+            background: var(--sn-teal);
+            box-shadow: 0 0.6rem 1.4rem rgba(0, 59, 92, 0.28);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease, background 0.3s ease;
+            z-index: 10001;
+            transform: translateY(-0.3rem);
+        }
+
+        .edit-toggle {
+            left: clamp(0.8rem, 1.2vw, 1rem);
+        }
+
+        .export-toggle {
+            left: clamp(6rem, 8vw, 7.2rem);
+            background: var(--sn-blue);
+        }
+
+        .edit-toggle.show,
+        .edit-toggle.active,
+        .export-toggle.show,
+        .export-toggle.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .editing [data-editable="true"] {
+            outline: 2px dashed rgba(255, 130, 0, 0.65);
+            outline-offset: 0.18rem;
+            cursor: text;
+        }
+
+        .editing .edit-toggle {
+            background: var(--sn-orange);
+        }
+
+        /* ===========================================
+           RESPONSIVE ADJUSTMENTS
+           Keep dense slides viewport-safe.
+           =========================================== */
+        @media (max-width: 980px) {
+            .title-grid,
+            .summary-grid,
+            .distribution-layout,
+            .takeaway-grid,
+            .metrics-grid.four,
+            .metrics-grid.three,
+            .examples-grid,
+            .recommendation-list,
+            .split-stat {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .title-grid::after {
+                width: clamp(12rem, 28vw, 18rem);
+                height: clamp(12rem, 28vw, 18rem);
+            }
+        }
+
+        @media (max-width: 720px) {
+            .title-grid,
+            .summary-grid,
+            .distribution-layout,
+            .takeaway-grid,
+            .metrics-grid.four,
+            .metrics-grid.three,
+            .examples-grid,
+            .recommendation-list,
+            .split-stat,
+            .callout-band {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-dots {
+                right: clamp(0.3rem, 1vw, 0.6rem);
+            }
+
+            .callout-band {
+                grid-template-columns: 1fr;
+                align-items: start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===========================================
+         PRESENTATION CHROME
+         Progress bar, navigation dots and edit affordances.
+         =========================================== -->
+    <div class="progress-bar" aria-hidden="true"></div>
+    <nav class="nav-dots" aria-label="Slide navigation"></nav>
+    <div class="edit-hotzone" aria-hidden="true"></div>
+    <button class="edit-toggle" id="editToggle" title="Edit mode (E)">Edit</button>
+    <button class="export-toggle" id="exportToggle" title="Export edited HTML (Ctrl/Cmd+S)">Export</button>
+
+    <!-- ===========================================
+         SLIDE 1: TITLE
+         Overall framing of the analysis.
+         =========================================== -->
+    <section class="slide title-slide" data-slide-title="Title">
+        <div class="slide-content">
+            <div class="slide-shell title-grid">
+                <div>
+                    <div class="brand-mark reveal stagger-1" data-editable="true"><strong>Springer Nature</strong> internal analysis</div>
+                    <h1 class="hero-title reveal stagger-2" data-editable="true">Personal vs billing details for personal invoices</h1>
+                    <p class="hero-subtitle reveal stagger-3" data-editable="true">Comparison of the details captured under the personal address against the institutional billing address for unique <code>BillingDetailsRecorded</code> records.</p>
+                </div>
+                <aside class="hero-tagline reveal-scale stagger-4">
+                    <span class="big-number" data-editable="true">556</span>
+                    <p data-editable="true">unique billing-detail records reviewed after removing exact duplicates from a 3,498-row source file.</p>
+                </aside>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 2: SCOPE
+         Dataset handling, filters and study design.
+         =========================================== -->
+    <section class="slide" data-slide-title="Scope">
+        <div class="slide-content">
+            <div class="slide-shell summary-grid">
+                <section class="panel panel-pad panel-stack reveal stagger-1">
+                    <div class="section-kicker" data-editable="true">Scope and method</div>
+                    <h2 class="section-title balanced-title" data-editable="true">What was compared</h2>
+                    <ul class="bullet-list">
+                        <li class="reveal stagger-2" data-editable="true">Filtered the CSV to <code>BillingDetailsRecorded</code> only.</li>
+                        <li class="reveal stagger-3" data-editable="true">Removed exact duplicate rows before analysing similarity.</li>
+                        <li class="reveal stagger-4" data-editable="true">Compared personal and billing values across city, phone, street, country, house number, postal code and email.</li>
+                        <li class="reveal stagger-5" data-editable="true">Used the supplied boolean equality flags and checked where formatting likely explains the difference.</li>
+                    </ul>
+                </section>
+                <aside class="panel panel-pad panel-stack reveal-scale stagger-3">
+                    <div class="eyebrow-chip" data-editable="true">Who confirmed billing</div>
+                    <div class="split-stat compact-top-gap">
+                        <div class="metric-card blue">
+                            <div class="label" data-editable="true">Corresponding author</div>
+                            <div class="value" data-editable="true">524</div>
+                            <div class="detail" data-editable="true">44.5% marked address equal</div>
+                        </div>
+                        <div class="metric-card orange">
+                            <div class="label" data-editable="true">Guest</div>
+                            <div class="value" data-editable="true">32</div>
+                            <div class="detail" data-editable="true">Only 6.2% marked address equal</div>
+                        </div>
+                    </div>
+                    <p class="caption" data-editable="true">Guest-submitted records are much more likely to show materially different personal and billing details.</p>
+                </aside>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 3: HEADLINE RESULT
+         Top-line interpretation of the address flag.
+         =========================================== -->
+    <section class="slide" data-slide-title="Headline">
+        <div class="slide-content">
+            <div class="slide-shell">
+                <div class="section-kicker reveal stagger-1" data-editable="true">Headline result</div>
+                <h2 class="section-title balanced-title reveal stagger-2" data-editable="true">Most records are flagged different, but that overstates how often the data truly diverges</h2>
+                <div class="split-stat">
+                    <article class="stat-block primary panel reveal-scale stagger-3">
+                        <div class="stat" data-editable="true">57.7%</div>
+                        <h3 data-editable="true">Address flag = false</h3>
+                        <p data-editable="true">321 of 556 records say the personal and billing address are not equal.</p>
+                    </article>
+                    <article class="stat-block secondary panel reveal-scale stagger-4">
+                        <div class="stat" data-editable="true">42.3%</div>
+                        <h3 data-editable="true">Address flag = true</h3>
+                        <p data-editable="true">235 records show a full match across the address-level comparison fields.</p>
+                    </article>
+                </div>
+                <div class="panel panel-pad reveal stagger-5">
+                    <p class="section-subtitle" data-editable="true">The key analytical question is not just whether the address flag is false, but whether the underlying field differences are substantive or mostly formatting, casing, institutional context, or partial address enrichment.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 4: FIELD-LEVEL SIMILARITY PART 1
+         Higher-level address components.
+         =========================================== -->
+    <section class="slide" data-slide-title="Field Similarity 1">
+        <div class="slide-content">
+            <div class="slide-shell">
+                <div class="section-kicker reveal stagger-1" data-editable="true">Where mismatch sits</div>
+                <h2 class="section-title reveal stagger-2" data-editable="true">Most disagreement sits in street text and contact details, not country</h2>
+                <p class="section-subtitle reveal stagger-2" data-editable="true">Country almost always matches and city usually does, which suggests many mismatches reflect local formatting, institutional-detail enrichment, or alternate contact details rather than a wholly different billing location.</p>
+                <div class="metrics-grid four">
+                    <article class="field-card reveal-scale stagger-2">
+                        <div class="field-top"><h3 data-editable="true">City</h3><strong data-editable="true">80.8%</strong></div>
+                        <div class="bar-track"><div class="bar-fill" style="width: 80.8%;"></div></div>
+                        <p class="caption" data-editable="true">Usually aligned; differences often reflect district or campus qualifiers rather than a completely different place.</p>
+                    </article>
+                    <article class="field-card orange reveal-scale stagger-3">
+                        <div class="field-top"><h3 data-editable="true">Phone</h3><strong data-editable="true">69.6%</strong></div>
+                        <div class="bar-track"><div class="bar-fill" style="width: 69.6%;"></div></div>
+                        <p class="caption" data-editable="true">Often differs because institutional contact numbers replace personal ones, so this is not always a location change.</p>
+                    </article>
+                    <article class="field-card green reveal-scale stagger-4">
+                        <div class="field-top"><h3 data-editable="true">Street</h3><strong data-editable="true">63.7%</strong></div>
+                        <div class="bar-track"><div class="bar-fill" style="width: 63.7%;"></div></div>
+                        <p class="caption" data-editable="true">This is where most location-level variation appears, often because billing adds department, campus or building detail.</p>
+                    </article>
+                    <article class="field-card purple reveal-scale stagger-5">
+                        <div class="field-top"><h3 data-editable="true">Country</h3><strong data-editable="true">93.7%</strong></div>
+                        <div class="bar-track"><div class="bar-fill" style="width: 93.7%;"></div></div>
+                        <p class="caption" data-editable="true">Country almost always aligns, so most differences are within-country rather than cross-border.</p>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 5: FIELD-LEVEL SIMILARITY PART 2
+         Secondary fields and signal quality.
+         =========================================== -->
+    <section class="slide" data-slide-title="Field Similarity 2">
+        <div class="slide-content">
+            <div class="slide-shell">
+                <div class="section-kicker reveal stagger-1" data-editable="true">Secondary fields</div>
+                <h2 class="section-title reveal stagger-2" data-editable="true">Email and postal code are strong anchors even when street text differs</h2>
+                <div class="metrics-grid three">
+                    <article class="field-card reveal-scale stagger-2">
+                        <div class="field-top"><h3 data-editable="true">House number</h3><strong data-editable="true">80.0%</strong></div>
+                        <div class="bar-track"><div class="bar-fill" style="width: 80%;"></div></div>
+                        <p class="caption" data-editable="true">Most populated house-number fields line up, but missing values also inflate the exact-match count.</p>
+                    </article>
+                    <article class="field-card orange reveal-scale stagger-3">
+                        <div class="field-top"><h3 data-editable="true">Postal code</h3><strong data-editable="true">78.4%</strong></div>
+                        <div class="bar-track"><div class="bar-fill" style="width: 78.4%;"></div></div>
+                        <p class="caption" data-editable="true">Minor formatting issues exist, but postcode remains a reliable similarity signal.</p>
+                    </article>
+                    <article class="field-card green reveal-scale stagger-4">
+                        <div class="field-top"><h3 data-editable="true">Email</h3><strong data-editable="true">93.2%</strong></div>
+                        <div class="bar-track"><div class="bar-fill" style="width: 93.2%;"></div></div>
+                        <p class="caption" data-editable="true">Normalised email similarity reaches 99.6%, so many mismatches are only casing differences.</p>
+                    </article>
+                    <aside class="panel panel-pad panel-stack reveal stagger-5">
+                        <div class="eyebrow-chip" data-editable="true">Interpretation</div>
+                        <p class="section-subtitle" data-editable="true">If country, email, city and postcode all line up, a false address flag often reflects notation differences, missing apartment information, or a billing address enriched with department or campus text.</p>
+                    </aside>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 6: FALSE BUCKETS
+         Quantifies how strong the hidden similarity is
+         within address=false records.
+         =========================================== -->
+    <section class="slide" data-slide-title="False Flag Buckets">
+        <div class="slide-content">
+            <div class="slide-shell distribution-layout">
+                <section class="panel panel-pad panel-stack reveal stagger-1">
+                    <div class="section-kicker" data-editable="true">Inside the 321 false records</div>
+                    <h2 class="section-title narrow-title" data-editable="true">Many “different” rows still match on most fields</h2>
+                    <div class="bucket-chart compact-top-gap">
+                        <div class="bucket-row reveal stagger-2"><span class="bucket-label" data-editable="true">6 of 7</span><div class="bucket-bar"><span style="width: 100%;"></span></div><span class="bucket-value" data-editable="true">144</span></div>
+                        <div class="bucket-row reveal stagger-3"><span class="bucket-label" data-editable="true">5 of 7</span><div class="bucket-bar"><span style="width: 37.5%;"></span></div><span class="bucket-value" data-editable="true">54</span></div>
+                        <div class="bucket-row reveal stagger-4"><span class="bucket-label" data-editable="true">4 of 7</span><div class="bucket-bar"><span style="width: 22.9%;"></span></div><span class="bucket-value" data-editable="true">33</span></div>
+                        <div class="bucket-row reveal stagger-5"><span class="bucket-label" data-editable="true">3 of 7</span><div class="bucket-bar"><span style="width: 24.3%;"></span></div><span class="bucket-value" data-editable="true">35</span></div>
+                        <div class="bucket-row reveal stagger-5"><span class="bucket-label" data-editable="true">2 of 7</span><div class="bucket-bar"><span style="width: 27.1%;"></span></div><span class="bucket-value" data-editable="true">39</span></div>
+                        <div class="bucket-row reveal stagger-6"><span class="bucket-label" data-editable="true">1 of 7</span><div class="bucket-bar"><span style="width: 11.1%;"></span></div><span class="bucket-value" data-editable="true">16</span></div>
+                    </div>
+                </section>
+                <aside class="insight-box">
+                    <div class="panel panel-pad reveal-scale stagger-2">
+                        <div class="highlight">
+                            <strong data-editable="true">144</strong>
+                            <p data-editable="true">Rows flagged different still match on six of seven compared fields. That is 44.9% of all false rows.</p>
+                        </div>
+                    </div>
+                    <div class="panel panel-pad reveal-scale stagger-3">
+                        <div class="highlight" style="border-left-color: var(--sn-orange); background: rgba(232, 109, 31, 0.08);">
+                            <strong style="color: var(--sn-orange);" data-editable="true">90</strong>
+                            <p data-editable="true">Rows matching on three fields or fewer are the strongest candidates for genuinely different billing destinations.</p>
+                        </div>
+                    </div>
+                    <div class="panel panel-pad reveal stagger-4">
+                        <p class="section-subtitle" data-editable="true">The flag appears to mix two behaviours: minor notation differences and materially different institutional billing addresses.</p>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 7: CASE EXAMPLES
+         Concrete examples of format-only vs genuine divergence.
+         =========================================== -->
+    <section class="slide" data-slide-title="Examples">
+        <div class="slide-content">
+                <div class="slide-shell">
+                    <div class="section-kicker reveal stagger-1" data-editable="true">Representative examples</div>
+                <h2 class="section-title balanced-title reveal stagger-2" data-editable="true">False flags split into “mostly similar” and “materially different” cases</h2>
+                <div class="examples-grid">
+                    <article class="example-card good reveal-scale stagger-2">
+                        <div class="case-type" data-editable="true">Likely format only</div>
+                        <h3 data-editable="true">Cairo</h3>
+                        <p data-editable="true">Email differs only by casing. City, street and postcode are identical, yet the address flag is false.</p>
+                        <span class="case-score" data-editable="true">6 of 7 fields match</span>
+                    </article>
+                    <article class="example-card good reveal-scale stagger-3">
+                        <div class="case-type" data-editable="true">Likely format only</div>
+                        <h3 data-editable="true">Daegu</h3>
+                        <p data-editable="true">Billing city adds district context: “Daegu” vs “Bukgu, Daegu”. The rest of the address remains strongly aligned.</p>
+                        <span class="case-score" data-editable="true">6 of 7 fields match</span>
+                    </article>
+                    <article class="example-card good reveal-scale stagger-4">
+                        <div class="case-type" data-editable="true">Likely format only</div>
+                        <h3 data-editable="true">Moscow</h3>
+                        <p data-editable="true">Street wording changes from “Street” to “Str”, but city, postcode and email match exactly.</p>
+                        <span class="case-score" data-editable="true">6 of 7 fields match</span>
+                    </article>
+                    <article class="example-card risk reveal-scale stagger-4">
+                        <div class="case-type" data-editable="true">Genuine divergence</div>
+                        <h3 data-editable="true">Brighton vs Macau</h3>
+                        <p data-editable="true">City, street, country and postal details all move. This is clearly not a notation issue.</p>
+                        <span class="case-score" data-editable="true">1 of 7 fields match</span>
+                    </article>
+                    <article class="example-card risk reveal-scale stagger-5">
+                        <div class="case-type" data-editable="true">Genuine divergence</div>
+                        <h3 data-editable="true">Créteil vs Bois-le-Roi</h3>
+                        <p data-editable="true">Different city, street and postcode show a true shift from personal residence to billing destination.</p>
+                        <span class="case-score" data-editable="true">2 of 7 fields match</span>
+                    </article>
+                    <article class="example-card risk reveal-scale stagger-6">
+                        <div class="case-type" data-editable="true">Genuine divergence</div>
+                        <h3 data-editable="true">Cairo vs New Cairo campus</h3>
+                        <p data-editable="true">The billing address moves to a university location, while the personal address remains residential.</p>
+                        <span class="case-score" data-editable="true">3 of 7 fields match</span>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 8: IMPLICATIONS AND RECOMMENDATIONS
+         Business takeaway and next-step guidance.
+         =========================================== -->
+    <section class="slide" data-slide-title="Recommendations">
+        <div class="slide-content">
+            <div class="slide-shell takeaway-grid single-column">
+                <section class="panel panel-pad panel-stack reveal stagger-1">
+                    <div class="section-kicker" data-editable="true">Implication</div>
+                    <h2 class="section-title balanced-title" data-editable="true">Personal and institutional billing details are often similar, but not reliably identical</h2>
+                    <div class="callout-band compact-top-gap">
+                        <div class="figure" data-editable="true">45%</div>
+                        <p class="section-subtitle" data-editable="true">of false-address rows still align on six of seven fields, so a binary flag alone is too blunt for personal invoice workflows.</p>
+                    </div>
+                    <p class="section-subtitle compact-top-gap" data-editable="true">A clearer takeaway is that personal and institutional billing details frequently align on the core fields, but the current boolean flag still bundles minor formatting differences together with genuinely different billing destinations.</p>
+                </section>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        /* ===========================================
+           SLIDE PRESENTATION CONTROLLER
+           Handles visibility, keyboard navigation,
+           mouse wheel paging, touch support,
+           progress bar and navigation dots.
+           =========================================== */
+        class SlidePresentation {
+            constructor() {
+                this.slides = Array.from(document.querySelectorAll('.slide'));
+                this.progressBar = document.querySelector('.progress-bar');
+                this.navDotsContainer = document.querySelector('.nav-dots');
+                this.currentSlide = 0;
+                this.isAnimatingScroll = false;
+                this.touchStartY = 0;
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.setupNavDots();
+                this.updateProgressBar();
+                this.updateCurrentSlideFromViewport();
+                window.addEventListener('scroll', () => {
+                    this.updateProgressBar();
+                    this.updateCurrentSlideFromViewport();
+                }, { passive: true });
+                window.addEventListener('resize', () => {
+                    this.updateProgressBar();
+                    this.updateCurrentSlideFromViewport();
+                });
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                        }
+                    });
+                }, {
+                    threshold: 0.35
+                });
+
+                this.slides.forEach((slide) => observer.observe(slide));
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (event) => {
+                    const target = event.target;
+                    const isEditingText = target && (target.isContentEditable || target.tagName === 'INPUT' || target.tagName === 'TEXTAREA');
+                    if (isEditingText) return;
+
+                    if (['ArrowDown', 'PageDown', ' '].includes(event.key)) {
+                        event.preventDefault();
+                        this.goToSlide(Math.min(this.currentSlide + 1, this.slides.length - 1));
+                    }
+
+                    if (['ArrowUp', 'PageUp'].includes(event.key)) {
+                        event.preventDefault();
+                        this.goToSlide(Math.max(this.currentSlide - 1, 0));
+                    }
+
+                    if (event.key === 'Home') {
+                        event.preventDefault();
+                        this.goToSlide(0);
+                    }
+
+                    if (event.key === 'End') {
+                        event.preventDefault();
+                        this.goToSlide(this.slides.length - 1);
+                    }
+                });
+            }
+
+            setupTouchNav() {
+                document.addEventListener('touchstart', (event) => {
+                    this.touchStartY = event.changedTouches[0].clientY;
+                }, { passive: true });
+
+                document.addEventListener('touchend', (event) => {
+                    const deltaY = this.touchStartY - event.changedTouches[0].clientY;
+                    if (Math.abs(deltaY) < 45) return;
+                    if (deltaY > 0) {
+                        this.goToSlide(Math.min(this.currentSlide + 1, this.slides.length - 1));
+                    } else {
+                        this.goToSlide(Math.max(this.currentSlide - 1, 0));
+                    }
+                }, { passive: true });
+            }
+
+            setupWheelNav() {
+                let wheelLock = false;
+                window.addEventListener('wheel', (event) => {
+                    if (wheelLock || Math.abs(event.deltaY) < 30) return;
+                    wheelLock = true;
+                    if (event.deltaY > 0) {
+                        this.goToSlide(Math.min(this.currentSlide + 1, this.slides.length - 1));
+                    } else {
+                        this.goToSlide(Math.max(this.currentSlide - 1, 0));
+                    }
+                    window.setTimeout(() => {
+                        wheelLock = false;
+                    }, 700);
+                }, { passive: true });
+            }
+
+            setupNavDots() {
+                this.navDotsContainer.innerHTML = '';
+                this.slides.forEach((slide, index) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot';
+                    dot.setAttribute('aria-label', `Go to slide ${index + 1}: ${slide.dataset.slideTitle || 'Slide'}`);
+                    dot.addEventListener('click', () => this.goToSlide(index));
+                    this.navDotsContainer.appendChild(dot);
+                });
+                this.updateNavDots();
+            }
+
+            updateCurrentSlideFromViewport() {
+                let bestIndex = 0;
+                let bestDistance = Number.POSITIVE_INFINITY;
+                this.slides.forEach((slide, index) => {
+                    const rect = slide.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+                    if (distance < bestDistance) {
+                        bestDistance = distance;
+                        bestIndex = index;
+                    }
+                });
+                this.currentSlide = bestIndex;
+                this.updateNavDots();
+            }
+
+            goToSlide(index) {
+                if (index < 0 || index >= this.slides.length) return;
+                this.currentSlide = index;
+                this.isAnimatingScroll = true;
+                this.slides[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
+                this.updateNavDots();
+                this.updateProgressBar();
+                window.setTimeout(() => {
+                    this.isAnimatingScroll = false;
+                }, 700);
+            }
+
+            updateProgressBar() {
+                const scrollTop = window.scrollY;
+                const maxScroll = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+                const progress = Math.min((scrollTop / maxScroll) * 100, 100);
+                this.progressBar.style.width = `${progress}%`;
+            }
+
+            updateNavDots() {
+                const dots = this.navDotsContainer.querySelectorAll('.nav-dot');
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === this.currentSlide);
+                });
+            }
+        }
+
+        /* ===========================================
+           INLINE EDITOR
+           Enables optional in-browser editing, local
+           persistence and HTML export.
+           =========================================== */
+        class InlineEditor {
+            constructor() {
+                this.storageKey = `slides:${window.location.pathname}:content:v2`;
+                this.legacyStorageKeys = [
+                    `slides:${window.location.pathname}:content`
+                ];
+                this.isActive = false;
+                this.editToggle = document.getElementById('editToggle');
+                this.exportToggle = document.getElementById('exportToggle');
+                this.hotzone = document.querySelector('.edit-hotzone');
+                this.editables = Array.from(document.querySelectorAll('[data-editable="true"]'));
+                this.hideTimeout = null;
+                this.loadSavedContent();
+                this.cleanEditedLayout();
+                this.setupButtons();
+                this.setupHoverReveal();
+                this.setupKeyboardShortcuts();
+            }
+
+            setupButtons() {
+                this.editToggle.addEventListener('click', () => this.toggleEditMode());
+                this.exportToggle.addEventListener('click', () => this.exportHtml());
+            }
+
+            setupHoverReveal() {
+                const showButtons = () => {
+                    clearTimeout(this.hideTimeout);
+                    this.editToggle.classList.add('show');
+                    this.exportToggle.classList.add('show');
+                };
+
+                const hideButtons = () => {
+                    this.hideTimeout = window.setTimeout(() => {
+                        if (!this.isActive) {
+                            this.editToggle.classList.remove('show');
+                            this.exportToggle.classList.remove('show');
+                        }
+                    }, 400);
+                };
+
+                this.hotzone.addEventListener('mouseenter', showButtons);
+                this.hotzone.addEventListener('mouseleave', hideButtons);
+                this.hotzone.addEventListener('click', () => this.toggleEditMode());
+
+                [this.editToggle, this.exportToggle].forEach((button) => {
+                    button.addEventListener('mouseenter', () => clearTimeout(this.hideTimeout));
+                    button.addEventListener('mouseleave', hideButtons);
+                });
+            }
+
+            setupKeyboardShortcuts() {
+                document.addEventListener('keydown', (event) => {
+                    const target = event.target;
+                    const editingText = target && target.isContentEditable;
+
+                    if ((event.key === 'e' || event.key === 'E') && !editingText) {
+                        event.preventDefault();
+                        this.toggleEditMode();
+                    }
+
+                    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
+                        event.preventDefault();
+                        if (this.isActive) {
+                            this.saveContent();
+                        }
+                        this.exportHtml();
+                    }
+                });
+            }
+
+            toggleEditMode() {
+                this.isActive = !this.isActive;
+                document.body.classList.toggle('editing', this.isActive);
+                this.editToggle.classList.toggle('active', this.isActive);
+                this.exportToggle.classList.toggle('active', this.isActive);
+                this.editToggle.classList.add('show');
+                this.exportToggle.classList.add('show');
+
+                this.editables.forEach((element) => {
+                    element.contentEditable = this.isActive ? 'true' : 'false';
+                    element.spellcheck = this.isActive;
+                    if (this.isActive) {
+                        element.dataset.originalRole = element.getAttribute('role') || '';
+                        element.addEventListener('input', this.handleInput);
+                    } else {
+                        element.removeEventListener('input', this.handleInput);
+                    }
+                });
+            }
+
+            handleInput = () => {
+                this.cleanEditedLayout();
+                this.saveContent();
+            };
+
+            cleanEditedLayout() {
+                document.querySelectorAll('.bullet-list li').forEach((item) => {
+                    const text = item.textContent.replace(/\u00a0/g, ' ').trim();
+                    item.classList.toggle('is-empty', text.length === 0);
+                });
+
+                document.querySelectorAll('.recommendation').forEach((card) => {
+                    const text = card.textContent.replace(/\u00a0/g, ' ').trim();
+                    card.classList.toggle('is-empty', text.length === 0);
+                });
+
+                document.querySelectorAll('.caption, .small-note').forEach((node) => {
+                    const text = node.textContent.replace(/\u00a0/g, ' ').trim();
+                    node.classList.toggle('is-empty', text.length === 0);
+                });
+
+                document.querySelectorAll('.recommendation-list').forEach((list) => {
+                    const visibleCards = Array.from(list.querySelectorAll('.recommendation')).filter((card) => !card.classList.contains('is-empty'));
+                    list.classList.toggle('is-empty', visibleCards.length === 0);
+                });
+            }
+
+            saveContent() {
+                this.cleanEditedLayout();
+                const content = this.editables.map((element, index) => ({
+                    index,
+                    html: element.innerHTML
+                }));
+                localStorage.setItem(this.storageKey, JSON.stringify(content));
+            }
+
+            loadSavedContent() {
+                this.legacyStorageKeys.forEach((key) => {
+                    if (key !== this.storageKey) {
+                        localStorage.removeItem(key);
+                    }
+                });
+                const raw = localStorage.getItem(this.storageKey);
+                if (!raw) return;
+                try {
+                    const saved = JSON.parse(raw);
+                    saved.forEach((item) => {
+                        if (this.editables[item.index]) {
+                            this.editables[item.index].innerHTML = item.html;
+                        }
+                    });
+                    this.cleanEditedLayout();
+                } catch (error) {
+                    console.warn('Could not restore saved slide content.', error);
+                }
+            }
+
+            exportHtml() {
+                const clone = document.documentElement.cloneNode(true);
+                clone.querySelectorAll('[contenteditable]').forEach((node) => {
+                    node.removeAttribute('contenteditable');
+                });
+                clone.querySelector('body').classList.remove('editing');
+                clone.querySelectorAll('.edit-toggle, .export-toggle').forEach((button) => {
+                    button.classList.remove('active', 'show');
+                });
+                const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+                const blob = new Blob([html], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const anchor = document.createElement('a');
+                anchor.href = url;
+                anchor.download = 'personal-vs-billing-analysis-slides-edited.html';
+                document.body.appendChild(anchor);
+                anchor.click();
+                anchor.remove();
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        /* ===========================================
+           BOOTSTRAP
+           Instantiates the deck and editor.
+           =========================================== */
+        const presentation = new SlidePresentation();
+        const editor = new InlineEditor();
+    </script>
+</body>
+</html>
